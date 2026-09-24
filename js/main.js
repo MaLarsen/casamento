@@ -1,13 +1,18 @@
 (() => {
   'use strict';
 
-  // Local da cerimônia. Preencha quando tiver (ex.: 'Espaço Jardim — Rua X, 123, Cidade').
-  const LOCAL = '';
+  // Informações do convite. Campo vazio fica oculto.
+  const INFO = {
+    local: '',                                  // ex.: 'Espaço Jardim'
+    endereco: '',                               // ex.: 'Rua X, 123 · Cidade/UF'
+    traje: '',                                  // ex.: 'Traje esporte fino'
+    confirmacao: '',                            // ex.: 'Confirme sua presença até 20/01/2027'
+    listaPresentes: 'https://marcioemagali.com.br',
+  };
 
   // Altura da aba (fração da altura do envelope) em cada versão do envelope
   const FLAP_H_BY_VARIANT = { floral: 0.4521, renda: 0.5271 };
   let FLAP_H = FLAP_H_BY_VARIANT.floral;
-  const CARD_RATIO = 1.4;    // altura/largura do cartão (5:7)
   const CARD_IN_ENV = 0.84;  // largura do cartão dentro do envelope, em fração da largura do envelope
 
   const $ = (id) => document.getElementById(id);
@@ -50,15 +55,20 @@
   function layout() {
     const vw = stage.clientWidth;
     const vh = stage.clientHeight;
-    const W = Math.round(Math.min(vw * 0.84, vh * 0.41, 460));
+    // No celular o envelope e o convite ocupam quase a tela toda
+    // (reserva ~75px em cima e embaixo para o texto e a dica de rolagem)
+    const W = Math.round(Math.min(vw * 0.94, vw < 700 ? (vh - 150) * 9 / 16 : vh * 0.41, 460));
     const H = W * 16 / 9;
-    const cwF = Math.round(Math.min(vw * 0.9, (vh * 0.86) / CARD_RATIO, 540));
+    // Proporção do cartão acompanha a tela: 5:7 no desktop, mais alto no celular (cabe no envelope até 1,95)
+    const cardRatio = clamp((vh * 0.88) / (vw * 0.92), 1.4, 1.95);
+    const cwF = Math.round(Math.min(vw * 0.92, (vh * 0.88) / cardRatio, 540));
 
     root.style.setProperty('--W', W + 'px');
     root.style.setProperty('--cw', cwF + 'px');
+    root.style.setProperty('--cr', cardRatio.toFixed(4));
 
     const cwA = W * CARD_IN_ENV;
-    const chA = cwA * CARD_RATIO;
+    const chA = cwA * cardRatio;
     const gap = W * 0.05;
     const cardTopRest = H - chA - H * 0.035;
 
@@ -169,13 +179,18 @@
     autoRaf = 0;
   }
 
-  function fillPlace() {
-    if (!LOCAL) return;
-    for (const id of ['cardPlace', 'detailsPlace']) {
+  function fillInfo() {
+    const show = (id, text) => {
       const el = $(id);
-      el.textContent = LOCAL;
-      el.hidden = false;
-    }
+      el.textContent = text;
+      el.hidden = !text;
+    };
+    show('cardPlace', INFO.local);
+    show('cardAddress', INFO.endereco);
+    show('cardDress', INFO.traje);
+    show('cardRsvp', INFO.confirmacao);
+    show('detailsPlace', [INFO.local, INFO.endereco].filter(Boolean).join(' · '));
+    $('giftLink').href = INFO.listaPresentes;
   }
 
   function startCountdown() {
@@ -200,7 +215,7 @@
   }
 
   setVariant();
-  fillPlace();
+  fillInfo();
   startCountdown();
   onResize();
   window.addEventListener('hashchange', () => { setVariant(); onResize(); });
