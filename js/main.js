@@ -5,7 +5,7 @@
   const LOCAL = '';
 
   // Altura da aba (fração da altura do envelope) em cada versão do envelope
-  const FLAP_H_BY_VARIANT = { floral: 0.4521, renda: 0.4521 };
+  const FLAP_H_BY_VARIANT = { floral: 0.4521, renda: 0.5271 };
   let FLAP_H = FLAP_H_BY_VARIANT.floral;
   const CARD_RATIO = 1.4;    // altura/largura do cartão (5:7)
   const CARD_IN_ENV = 0.84;  // largura do cartão dentro do envelope, em fração da largura do envelope

@@ -37,6 +37,7 @@
   --flap-r: 90.26%;
   --flap-tip: 49.79%;
   --flap-h: 45.21%;
+  --flap-box-h: var(--flap-h);
 
   /* Preenchidos pelo JS */
   --W: 360px;   /* largura do envelope */
@@ -198,7 +199,7 @@ body {
   left: 0;
   top: 0;
   width: 100%;
-  height: var(--flap-h);
+  height: var(--flap-box-h);
   z-index: 5;
   transform-origin: 50% 0;
   transform-style: preserve-3d;
@@ -246,6 +247,40 @@ body {
   filter: drop-shadow(0 3px 4px rgba(60, 42, 20, .28)) drop-shadow(0 10px 14px rgba(60, 42, 20, .16));
   background: url("../assets/selo.webp") 0 0 / 100% 100% no-repeat;
 }
+
+/* ---------- Versão renda e pérola (#renda) ----------
+  Envelope de papel liso; a aba (renda + pérola) é um recorte com transparência
+  e o papel embaixo dela foi limpo. Medidas em frações da imagem 1080×1920. */
+[data-variant="renda"] {
+  --flap-l: 11.66%;
+  --flap-r: 88.57%;
+  --flap-tip: 49.63%;
+  --flap-h: 41.14%;      /* ponta do papel da aba: limite da abertura */
+  --flap-box-h: 52.71%;  /* recorte inteiro, até a ponta da renda */
+}
+
+[data-variant="renda"] .env-front__paper {
+  background-image: url("../assets/envelope-renda.webp");
+}
+
+[data-variant="renda"] .flap__front {
+  background: url("../assets/aba-renda.webp") 0 0 / 100% 100% no-repeat;
+  clip-path: none;
+  /* sombra da renda sobre o envelope; a luz vem de cima, à direita */
+  filter: drop-shadow(calc(var(--W) * -.012) calc(var(--W) * .01) calc(var(--W) * .014) rgba(60, 42, 20, .32));
+}
+
+[data-variant="renda"] .flap__front .flap__shade {
+  -webkit-mask: url("../assets/aba-renda.webp") 0 0 / 100% 100% no-repeat;
+  mask: url("../assets/aba-renda.webp") 0 0 / 100% 100% no-repeat;
+}
+
+/* verso da aba: só o triângulo de papel (41,14 / 52,71 = 78,04% da caixa, espelhado) */
+[data-variant="renda"] .flap__back {
+  clip-path: polygon(var(--flap-l) 100%, var(--flap-r) 100%, var(--flap-tip) 21.96%);
+}
+
+[data-variant="renda"] .seal { display: none; }
 
 /* ---------- Cartão ---------- */
 
