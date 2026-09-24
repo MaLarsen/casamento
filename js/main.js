@@ -4,7 +4,7 @@
   // Local da cerimônia. Preencha quando tiver (ex.: 'Espaço Jardim — Rua X, 123, Cidade').
   const LOCAL = '';
 
-  const FLAP_H = 0.453;      // altura da aba em fração da altura do envelope
+  const FLAP_H = 0.4521;     // altura da aba em fração da altura do envelope
   const CARD_RATIO = 1.4;    // altura/largura do cartão (5:7)
   const CARD_IN_ENV = 0.84;  // largura do cartão dentro do envelope, em fração da largura do envelope
 

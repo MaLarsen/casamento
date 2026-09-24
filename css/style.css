@@ -33,9 +33,10 @@
   --inner: #e6dccb;
 
   /* Geometria da foto do envelope (frações da imagem 9:16) */
-  --flap-l: 11.1%;
-  --flap-r: 89.8%;
-  --flap-h: 45.3%;
+  --flap-l: 11.43%;
+  --flap-r: 90.26%;
+  --flap-tip: 49.79%;
+  --flap-h: 45.21%;
 
   /* Preenchidos pelo JS */
   --W: 360px;   /* largura do envelope */
@@ -170,7 +171,7 @@ body {
   position: absolute;
   inset: 0;
   background: url("../assets/envelope.webp") 0 0 / 100% 100% no-repeat;
-  clip-path: polygon(0 0, var(--flap-l) 0, 50% var(--flap-h), var(--flap-r) 0, 100% 0, 100% 100%, 0 100%);
+  clip-path: polygon(0 0, var(--flap-l) 0, var(--flap-tip) var(--flap-h), var(--flap-r) 0, 100% 0, 100% 100%, 0 100%);
 }
 
 .flap {
@@ -193,8 +194,8 @@ body {
 }
 
 .flap__front {
-  background: url("../assets/envelope.webp") 0 0 / 100% calc(100% / 0.453) no-repeat;
-  clip-path: polygon(var(--flap-l) 0, var(--flap-r) 0, 50% 100%);
+  background: url("../assets/envelope.webp") 0 0 / 100% calc(100% / 0.4521) no-repeat;
+  clip-path: polygon(var(--flap-l) 0, var(--flap-r) 0, var(--flap-tip) 100%);
 }
 
 .flap__back {
@@ -202,7 +203,7 @@ body {
   background:
     var(--paper-noise),
     linear-gradient(0deg, #f4eee3 0%, #ece3d4 100%);
-  clip-path: polygon(var(--flap-l) 100%, var(--flap-r) 100%, 50% 0);
+  clip-path: polygon(var(--flap-l) 100%, var(--flap-r) 100%, var(--flap-tip) 0);
 }
 
 .flap__shade {
@@ -227,9 +228,9 @@ body {
   position: absolute;
   /* caixa do selo na foto: x 265–645, y 580–960 (900×1600) */
   left: 29.44%;
-  top: 80.02%;
+  top: 80.18%;
   width: 42.22%;
-  height: 52.43%;
+  height: 52.53%;
   transform: translateZ(1px);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
