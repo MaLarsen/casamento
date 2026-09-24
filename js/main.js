@@ -161,24 +161,10 @@
     setInterval(update, 1000);
   }
 
-  function waitImages() {
-    const srcs = ['assets/envelope-sem-selo.webp', 'assets/selo.webp'];
-    return Promise.all(srcs.map((src) => new Promise((res) => {
-      const img = new Image();
-      img.onload = img.onerror = res;
-      img.src = src;
-    })));
-  }
-
   fillPlace();
   startCountdown();
   onResize();
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onResize);
   reduceMotion.addEventListener?.('change', onResize);
-
-  Promise.all([waitImages(), document.fonts ? document.fonts.ready : null]).then(() => {
-    onResize();
-    document.body.classList.add('is-ready');
-  });
 })();

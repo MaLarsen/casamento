@@ -75,11 +75,7 @@ body {
   height: 100vh;
   height: 100svh;
   overflow: hidden;
-  opacity: 0;
-  transition: opacity .8s ease;
 }
-
-.is-ready .stage { opacity: 1; }
 
 .kicker {
   position: absolute;
@@ -426,5 +422,4 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .reveal { height: 100vh; height: 100svh; }
   .hint i { animation: none; }
-  .stage { transition: none; }
 }
