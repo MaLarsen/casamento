@@ -170,7 +170,7 @@ body {
 .env-front__paper {
   position: absolute;
   inset: 0;
-  background: url("../assets/envelope.webp") 0 0 / 100% 100% no-repeat;
+  background: url("../assets/envelope-sem-selo.webp") 0 0 / 100% 100% no-repeat;
   clip-path: polygon(0 0, var(--flap-l) 0, var(--flap-tip) var(--flap-h), var(--flap-r) 0, 100% 0, 100% 100%, 0 100%);
 }
 
@@ -194,7 +194,7 @@ body {
 }
 
 .flap__front {
-  background: url("../assets/envelope.webp") 0 0 / 100% calc(100% / 0.4521) no-repeat;
+  background: url("../assets/envelope-sem-selo.webp") 0 0 / 100% calc(100% / 0.4521) no-repeat;
   clip-path: polygon(var(--flap-l) 0, var(--flap-r) 0, var(--flap-tip) 100%);
 }
 
@@ -213,17 +213,7 @@ body {
   opacity: 0;
 }
 
-/*
-  Dois modos de selo:
-  - padrão: foto original; o lacre "rompe" na borda da aba.
-  - .is-lift: foto sem selo + selo recortado que sobe junto com a aba.
-*/
-.is-lift .env-front__paper,
-.is-lift .flap__front { background-image: url("../assets/envelope-sem-selo.webp"); }
-
-.seal { display: none; }
-.is-lift .seal { display: block; }
-
+/* Selo recortado da foto original; preso à aba, sobe junto quando ela abre */
 .seal {
   position: absolute;
   /* caixa do selo na foto: x 265–645, y 580–960 (900×1600) */

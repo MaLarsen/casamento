@@ -161,21 +161,13 @@
     setInterval(update, 1000);
   }
 
-  const loadImage = (src) => new Promise((res) => {
-    const img = new Image();
-    img.onload = () => res(true);
-    img.onerror = () => res(false);
-    img.src = src;
-  });
-
-  // Com a foto sem selo disponível, o selo sobe junto com a aba; sem ela, o lacre rompe na borda da aba.
   function waitImages() {
-    return Promise.all([
-      loadImage('assets/envelope-sem-selo.webp').then((ok) => {
-        if (ok) return loadImage('assets/selo.webp').then(() => rig.classList.add('is-lift'));
-        return loadImage('assets/envelope.webp');
-      }),
-    ]);
+    const srcs = ['assets/envelope-sem-selo.webp', 'assets/selo.webp'];
+    return Promise.all(srcs.map((src) => new Promise((res) => {
+      const img = new Image();
+      img.onload = img.onerror = res;
+      img.src = src;
+    })));
   }
 
   fillPlace();
