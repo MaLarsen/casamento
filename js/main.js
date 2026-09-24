@@ -20,8 +20,12 @@
   const flapBackShade = $('flapBackShade');
   const kicker = $('kicker');
   const hint = $('hint');
+  const openBtn = $('open');
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  const OPEN_AT = 0.9;     // progresso em que o convite já está no centro
+  const CLICKABLE = 0.6;   // até aqui o envelope ainda aceita toque para abrir
 
   const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
   const seg = (p, a, b) => clamp((p - a) / (b - a));
@@ -33,6 +37,7 @@
   let current = 0;     // progresso suavizado
   let raf = 0;
   let last = 0;
+  let autoRaf = 0;     // rolagem automática disparada pelo toque
 
   function layout() {
     const vw = stage.clientWidth;
@@ -99,6 +104,7 @@
     const fade = 1 - seg(p, 0, 0.06);
     kicker.style.opacity = fade.toFixed(3);
     hint.style.opacity = fade.toFixed(3);
+    openBtn.hidden = p >= CLICKABLE;
   }
 
   function readScroll() {
@@ -129,6 +135,30 @@
     target = readScroll();
     current = target;
     render(current);
+  }
+
+  // Abre rolando a página até o convite, então o movimento é o mesmo da rolagem manual
+  function openEnvelope() {
+    const total = reveal.offsetHeight - stage.clientHeight;
+    const from = window.scrollY;
+    const to = reveal.offsetTop + total * OPEN_AT;
+    if (total <= 0 || to <= from + 1) return;
+    const dur = 3200 * (1 - clamp(current / OPEN_AT)) + 500;
+    const t0 = performance.now();
+    cancelAnimationFrame(autoRaf);
+    const step = (now) => {
+      const t = clamp((now - t0) / dur);
+      window.scrollTo(0, from + (to - from) * ease(t));
+      autoRaf = t < 1 ? requestAnimationFrame(step) : 0;
+    };
+    autoRaf = requestAnimationFrame(step);
+  }
+
+  // Qualquer gesto do usuário fora do envelope devolve o controle a ele
+  function stopAuto(e) {
+    if (!autoRaf || (e.type !== 'wheel' && e.target === openBtn)) return;
+    cancelAnimationFrame(autoRaf);
+    autoRaf = 0;
   }
 
   function fillPlace() {
@@ -165,6 +195,10 @@
   startCountdown();
   onResize();
   window.addEventListener('scroll', onScroll, { passive: true });
+  openBtn.addEventListener('click', openEnvelope);
+  for (const ev of ['wheel', 'touchstart', 'pointerdown', 'keydown']) {
+    window.addEventListener(ev, stopAuto, { passive: true });
+  }
   window.addEventListener('resize', onResize);
   reduceMotion.addEventListener?.('change', onResize);
 })();

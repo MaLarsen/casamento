@@ -120,6 +120,29 @@ body {
   100% { transform: scaleY(1); opacity: 0; }
 }
 
+/* Área de toque sobre o envelope fechado */
+.open {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--W);
+  height: calc(var(--W) * 16 / 9);
+  margin-left: calc(var(--W) / -2);
+  margin-top: calc(var(--W) * -8 / 9);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.open:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 6px;
+}
+
+.open[hidden] { display: none; }
+
 /* ---------- Envelope ---------- */
 
 .rig {
