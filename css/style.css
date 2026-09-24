@@ -302,11 +302,66 @@ body {
     0 1px 2px rgba(60, 42, 20, .14),
     0 12px 30px -10px rgba(60, 42, 20, .3);
   font-size: calc(var(--cw) / 24);
+  overflow: hidden;
+  --banner-h: 0px;
 }
+
+/* Foto no topo do cartão, de ponta a ponta do papel (versão floral) */
+.card__banner {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--banner-h);
+  background: url("../assets/maos.webp") 50% 58% / cover no-repeat;
+  -webkit-mask-image: linear-gradient(#000 78%, transparent);
+  mask-image: linear-gradient(#000 78%, transparent);
+}
+
+/* Data por extenso, em três linhas (versão floral) */
+.card__when {
+  display: none;
+  margin: 1.3em 0 0;
+  padding: .75em 0;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: .2em;
+  border-top: 1px solid rgba(168, 141, 98, .6);
+  border-bottom: 1px solid rgba(168, 141, 98, .6);
+  color: var(--ink);
+}
+
+.card__when-day {
+  font-size: .8em;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+}
+
+.card__when-date {
+  font-size: 1.55em;
+  font-weight: 500;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.card__when-time {
+  font-size: 1.15em;
+  font-style: italic;
+}
+
+[data-variant="floral"] .card { --banner-h: calc(var(--cw) * min(.6, var(--cr, 1.4) * .31)); }
+[data-variant="floral"] .card__banner { display: block; }
+[data-variant="floral"] .card__when { display: flex; }
+[data-variant="floral"] .card__sprig,
+[data-variant="floral"] .card__date,
+[data-variant="floral"] .card__month { display: none; }
 
 .card__inner {
   position: absolute;
   inset: calc(var(--cw) * .045);
+  top: calc(var(--banner-h) + var(--cw) * .045);
   display: flex;
   flex-direction: column;
   align-items: center;

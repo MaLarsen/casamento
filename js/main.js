@@ -59,8 +59,10 @@
     // (reserva ~75px em cima e embaixo para o texto e a dica de rolagem)
     const W = Math.round(Math.min(vw * 0.94, vw < 700 ? (vh - 150) * 9 / 16 : vh * 0.41, 460));
     const H = W * 16 / 9;
-    // Proporção do cartão acompanha a tela: 5:7 no desktop, mais alto no celular (cabe no envelope até 1,95)
-    const cardRatio = clamp((vh * 0.88) / (vw * 0.92), 1.4, 1.95);
+    // Proporção do cartão acompanha a tela: mais alto no celular (cabe no envelope até 1,95).
+    // O floral tem foto no topo, então nunca fica mais baixo que 1,75.
+    const minRatio = root.dataset.variant === 'floral' ? 1.75 : 1.4;
+    const cardRatio = clamp((vh * 0.88) / (vw * 0.92), minRatio, 1.95);
     const cwF = Math.round(Math.min(vw * 0.92, (vh * 0.88) / cardRatio, 540));
 
     root.style.setProperty('--W', W + 'px');
