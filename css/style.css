@@ -1,0 +1,439 @@
+/* Fontes locais (SIL OFL 1.1, ver fonts/) */
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("../fonts/cormorant-garamond.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-style: italic;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("../fonts/cormorant-garamond-italic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Pinyon Script";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/pinyon-script.woff2") format("woff2");
+}
+
+:root {
+  --bg: #ebe3d5;
+  --bg-deep: #ddd2c0;
+  --ink: #5b4d3d;
+  --ink-soft: #8a7a66;
+  --gold: #a88d62;
+  --paper: #fbf7ef;
+  --inner: #e6dccb;
+
+  /* Geometria da foto do envelope (frações da imagem 9:16) */
+  --flap-l: 11.1%;
+  --flap-r: 89.8%;
+  --flap-h: 45.3%;
+
+  /* Preenchidos pelo JS */
+  --W: 360px;   /* largura do envelope */
+  --cw: 360px;  /* largura final do cartão */
+
+  --paper-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .3 0 0 0 0 .22 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background:
+    var(--paper-noise),
+    radial-gradient(120% 90% at 50% 40%, var(--bg) 55%, var(--bg-deep) 100%);
+  background-attachment: fixed;
+  font-family: "Cormorant Garamond", "Times New Roman", serif;
+  overflow-x: hidden;
+}
+
+/* ---------- Trilho de rolagem ---------- */
+
+.reveal {
+  position: relative;
+  height: 460vh;
+}
+
+.stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity .8s ease;
+}
+
+.is-ready .stage { opacity: 1; }
+
+.kicker {
+  position: absolute;
+  top: max(3.2svh, 18px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  text-align: center;
+  font-size: clamp(13px, 1.9svh, 17px);
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.hint {
+  position: absolute;
+  bottom: max(2.2svh, 12px);
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: clamp(12px, 1.8svh, 16px);
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.hint i {
+  display: block;
+  width: 1px;
+  height: clamp(20px, 3.4svh, 34px);
+  background: linear-gradient(var(--ink-soft), transparent);
+  animation: hint 2.2s ease-in-out infinite;
+  transform-origin: top;
+}
+
+@keyframes hint {
+  0%   { transform: scaleY(0); opacity: 1; }
+  60%  { transform: scaleY(1); opacity: 1; }
+  100% { transform: scaleY(1); opacity: 0; }
+}
+
+/* ---------- Envelope ---------- */
+
+.rig {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--W);
+  height: calc(var(--W) * 16 / 9);
+  margin-left: calc(var(--W) / -2);
+  margin-top: calc(var(--W) * -8 / 9);
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+.env-shadow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: 2px;
+  box-shadow:
+    0 2px 4px rgba(70, 52, 30, .12),
+    0 18px 40px -8px rgba(70, 52, 30, .28),
+    0 50px 80px -30px rgba(70, 52, 30, .3);
+}
+
+.env-back {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    var(--paper-noise),
+    linear-gradient(180deg, #cbbda6 0%, #ddd1bd 22%, var(--inner) 48%);
+}
+
+.env-front {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  /* sombra da borda em V sobre o cartão quando ele está dentro */
+  filter: drop-shadow(0 -1px 2px rgba(60, 42, 20, .22));
+  pointer-events: none;
+}
+
+.env-front__paper {
+  position: absolute;
+  inset: 0;
+  background: url("../assets/envelope.webp") 0 0 / 100% 100% no-repeat;
+  clip-path: polygon(0 0, var(--flap-l) 0, 50% var(--flap-h), var(--flap-r) 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.flap {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: var(--flap-h);
+  z-index: 5;
+  transform-origin: 50% 0;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+.flap__face {
+  position: absolute;
+  inset: 0;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.flap__front {
+  background: url("../assets/envelope.webp") 0 0 / 100% calc(100% / 0.453) no-repeat;
+  clip-path: polygon(var(--flap-l) 0, var(--flap-r) 0, 50% 100%);
+}
+
+.flap__back {
+  transform: rotateX(180deg);
+  background:
+    var(--paper-noise),
+    linear-gradient(0deg, #f4eee3 0%, #ece3d4 100%);
+  clip-path: polygon(var(--flap-l) 100%, var(--flap-r) 100%, 50% 0);
+}
+
+.flap__shade {
+  position: absolute;
+  inset: 0;
+  background: #3b2c19;
+  opacity: 0;
+}
+
+/*
+  Dois modos de selo:
+  - padrão: foto original; o lacre "rompe" na borda da aba.
+  - .is-lift: foto sem selo + selo recortado que sobe junto com a aba.
+*/
+.is-lift .env-front__paper,
+.is-lift .flap__front { background-image: url("../assets/envelope-sem-selo.webp"); }
+
+.seal { display: none; }
+.is-lift .seal { display: block; }
+
+.seal {
+  position: absolute;
+  /* caixa do selo na foto: x 265–645, y 580–960 (900×1600) */
+  left: 29.44%;
+  top: 80.02%;
+  width: 42.22%;
+  height: 52.43%;
+  transform: translateZ(1px);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  filter: drop-shadow(0 3px 4px rgba(60, 42, 20, .28)) drop-shadow(0 10px 14px rgba(60, 42, 20, .16));
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* ---------- Cartão ---------- */
+
+.card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--cw);
+  height: calc(var(--cw) * 1.4);
+  margin-left: calc(var(--cw) / -2);
+  margin-top: calc(var(--cw) * -0.7);
+  z-index: 3;
+  transform-origin: 50% 50%;
+  background:
+    var(--paper-noise),
+    linear-gradient(170deg, #fffdf8 0%, var(--paper) 55%, #f3ecdf 100%);
+  border-radius: calc(var(--cw) * .006);
+  box-shadow:
+    0 1px 2px rgba(60, 42, 20, .14),
+    0 12px 30px -10px rgba(60, 42, 20, .3);
+  font-size: calc(var(--cw) / 24);
+}
+
+.card__inner {
+  position: absolute;
+  inset: 4.2%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 1px solid rgba(168, 141, 98, .55);
+  outline: 1px solid rgba(168, 141, 98, .35);
+  outline-offset: calc(var(--cw) * -.016);
+  padding: 8% 7%;
+}
+
+.card__sprig {
+  width: 26%;
+  height: auto;
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  margin-bottom: 1.2em;
+}
+
+.card__sprig circle { fill: var(--gold); stroke: none; }
+
+.card__lead {
+  margin: 0 0 1.1em;
+  font-size: .98em;
+  font-style: italic;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.card__names {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: "Pinyon Script", "Snell Roundhand", cursive;
+  font-weight: 400;
+  font-size: 3.1em;
+  line-height: 1.02;
+  color: var(--ink);
+}
+
+.card__amp {
+  font-family: "Cormorant Garamond", serif;
+  font-style: italic;
+  font-size: .5em;
+  line-height: 1.3;
+  color: var(--gold);
+}
+
+.card__date {
+  margin-top: 1.25em;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  width: 100%;
+  column-gap: .9em;
+}
+
+.card__date-side {
+  font-size: .78em;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  padding: .45em 0;
+  border-top: 1px solid rgba(168, 141, 98, .6);
+  border-bottom: 1px solid rgba(168, 141, 98, .6);
+  color: var(--ink);
+}
+
+.card__date-side:first-child { text-align: right; }
+.card__date-side:last-child  { text-align: left; }
+
+.card__date-day {
+  font-size: 2.7em;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.card__month {
+  margin: .5em 0 0;
+  font-size: .82em;
+  letter-spacing: .34em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.card__place {
+  margin: 1.2em 0 0;
+  font-size: .9em;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+/* ---------- Detalhes ---------- */
+
+.details {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 72px 16px;
+  text-align: center;
+}
+
+.details__eyebrow {
+  margin: 0 0 14px;
+  font-size: 15px;
+  letter-spacing: .34em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.countdown {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(8px, 3vw, 28px);
+  width: min(100%, 520px);
+}
+
+.countdown div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 4px 12px;
+  border-top: 1px solid rgba(168, 141, 98, .55);
+  border-bottom: 1px solid rgba(168, 141, 98, .55);
+}
+
+.countdown strong {
+  font-size: clamp(30px, 9vw, 52px);
+  font-weight: 500;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.countdown span {
+  margin-top: 6px;
+  font-size: 13px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.details__date {
+  margin: 34px 0 0;
+  font-size: clamp(19px, 4.6vw, 24px);
+  font-style: italic;
+}
+
+.details__place {
+  margin: 8px 0 0;
+  font-size: clamp(17px, 4vw, 21px);
+  color: var(--ink-soft);
+}
+
+.details__sign {
+  margin: 48px 0 0;
+  font-family: "Pinyon Script", cursive;
+  font-size: clamp(38px, 10vw, 58px);
+  color: var(--ink);
+}
+
+/* ---------- Movimento reduzido: mostra o convite já aberto ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { height: 100vh; height: 100svh; }
+  .hint i { animation: none; }
+  .stage { transition: none; }
+}

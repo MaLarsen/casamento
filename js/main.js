@@ -1,0 +1,192 @@
+(() => {
+  'use strict';
+
+  // Local da cerimônia. Preencha quando tiver (ex.: 'Espaço Jardim — Rua X, 123, Cidade').
+  const LOCAL = '';
+
+  const FLAP_H = 0.453;      // altura da aba em fração da altura do envelope
+  const CARD_RATIO = 1.4;    // altura/largura do cartão (5:7)
+  const CARD_IN_ENV = 0.84;  // largura do cartão dentro do envelope, em fração da largura do envelope
+
+  const $ = (id) => document.getElementById(id);
+  const root = document.documentElement;
+  const reveal = $('reveal');
+  const stage = $('stage');
+  const rig = $('rig');
+  const flap = $('flap');
+  const seal = $('seal');
+  const card = $('card');
+  const flapShade = $('flapShade');
+  const flapBackShade = $('flapBackShade');
+  const kicker = $('kicker');
+  const hint = $('hint');
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const seg = (p, a, b) => clamp((p - a) / (b - a));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+  let L = null;        // medidas atuais
+  let target = 0;      // progresso pedido pela rolagem
+  let current = 0;     // progresso suavizado
+  let raf = 0;
+  let last = 0;
+
+  function layout() {
+    const vw = stage.clientWidth;
+    const vh = stage.clientHeight;
+    const W = Math.round(Math.min(vw * 0.84, vh * 0.41, 460));
+    const H = W * 16 / 9;
+    const cwF = Math.round(Math.min(vw * 0.9, (vh * 0.86) / CARD_RATIO, 540));
+
+    root.style.setProperty('--W', W + 'px');
+    root.style.setProperty('--cw', cwF + 'px');
+
+    const cwA = W * CARD_IN_ENV;
+    const chA = cwA * CARD_RATIO;
+    const gap = W * 0.05;
+    const cardTopRest = H - chA - H * 0.035;
+
+    // Afasta a "câmera" até a aba aberta caber na tela
+    const s1 = Math.min(0.76, (vh * 0.9) / ((1 + FLAP_H) * H));
+    const ty1 = Math.max(0, vh * 0.05 + FLAP_H * H * s1 + (H * s1) / 2 - vh / 2);
+    // Cartão todo fora, ainda preso ao envelope, perto do centro
+    const ty2 = -vh * 0.04 + s1 * (H / 2 + gap + chA / 2);
+    // Envelope (com a aba aberta) sai inteiro por baixo da tela
+    const ty3 = vh / 2 + H * s1 * (0.5 + FLAP_H) + vh * 0.04;
+
+    L = {
+      vw, vh, W, H, cwF, chA, s1, ty1, ty2, ty3,
+      kAtt: cwA / cwF,
+      cy0: cardTopRest + chA / 2 - H / 2,
+      rise: cardTopRest + chA + gap,
+    };
+  }
+
+  function render(p) {
+    const { vh, H, chA, s1, ty1, ty2, ty3, kAtt, cy0, rise } = L;
+
+    const tFlap = ease(seg(p, 0.05, 0.3));
+    const tPull = ease(seg(p, 0.02, 0.26));
+    const tRise = ease(seg(p, 0.3, 0.64));
+    const tOut = ease(seg(p, 0.6, 0.88));
+
+    // Envelope
+    const s = lerp(1, s1, tPull);
+    const ty = lerp(0, ty1, tPull) + (ty2 - ty1) * tRise + (ty3 - ty2) * tOut;
+    rig.style.transform = `translate3d(0, ${ty.toFixed(2)}px, 0) scale(${s.toFixed(4)})`;
+
+    // Aba: gira em torno da borda superior e passa para trás do cartão depois de 90°
+    const angle = 180 * tFlap;
+    flap.style.transform = `perspective(${Math.round(H * 2.4)}px) rotateX(${angle.toFixed(2)}deg)`;
+    flap.style.zIndex = angle > 90 ? 2 : 5;
+    const rad = (angle * Math.PI) / 180;
+    flapShade.style.opacity = (Math.sin(rad) * 0.28).toFixed(3);
+    flapBackShade.style.opacity = (angle > 90 ? (1 - (angle - 90) / 90) * 0.3 : 0.3).toFixed(3);
+    seal.style.opacity = angle < 88 ? 1 : 0;
+
+    // Cartão: sobe de dentro do envelope e depois vem para o centro da tela
+    const dyAtt = cy0 - rise * tRise;
+    const dyOut = (-vh * 0.005 - ty) / s;
+    const dy = lerp(dyAtt, dyOut, tOut);
+    const k = lerp(kAtt, 1 / s, tOut);
+    card.style.transform = `translate3d(0, ${dy.toFixed(2)}px, 0) scale(${k.toFixed(4)})`;
+    // Sai da frente do bolso quando a base do cartão passa a borda de cima do envelope
+    card.style.zIndex = dyAtt + chA / 2 < -H / 2 ? 6 : 3;
+
+    const fade = 1 - seg(p, 0, 0.06);
+    kicker.style.opacity = fade.toFixed(3);
+    hint.style.opacity = fade.toFixed(3);
+  }
+
+  function readScroll() {
+    if (reduceMotion.matches) return 1;
+    const r = reveal.getBoundingClientRect();
+    const total = reveal.offsetHeight - stage.clientHeight;
+    return total > 0 ? clamp(-r.top / total) : 1;
+  }
+
+  function tick(now) {
+    const dt = Math.min(64, now - (last || now));
+    last = now;
+    // Suaviza sem atrasar demais o dedo/roda do mouse
+    current += (target - current) * (1 - Math.exp(-dt / 90));
+    if (Math.abs(target - current) < 0.0004) current = target;
+    render(current);
+    raf = current === target ? 0 : requestAnimationFrame(tick);
+    if (!raf) last = 0;
+  }
+
+  function onScroll() {
+    target = readScroll();
+    if (!raf) raf = requestAnimationFrame(tick);
+  }
+
+  function onResize() {
+    layout();
+    target = readScroll();
+    current = target;
+    render(current);
+  }
+
+  function fillPlace() {
+    if (!LOCAL) return;
+    for (const id of ['cardPlace', 'detailsPlace']) {
+      const el = $(id);
+      el.textContent = LOCAL;
+      el.hidden = false;
+    }
+  }
+
+  function startCountdown() {
+    const box = $('countdown');
+    const when = new Date(box.dataset.date).getTime();
+    const cells = {};
+    box.querySelectorAll('[data-unit]').forEach((el) => { cells[el.dataset.unit] = el; });
+    const pad = (n) => String(n).padStart(2, '0');
+    const update = () => {
+      let t = Math.max(0, Math.floor((when - Date.now()) / 1000));
+      const d = Math.floor(t / 86400); t -= d * 86400;
+      const h = Math.floor(t / 3600); t -= h * 3600;
+      const m = Math.floor(t / 60);
+      const s = t - m * 60;
+      cells.d.textContent = d;
+      cells.h.textContent = pad(h);
+      cells.m.textContent = pad(m);
+      cells.s.textContent = pad(s);
+    };
+    update();
+    setInterval(update, 1000);
+  }
+
+  const loadImage = (src) => new Promise((res) => {
+    const img = new Image();
+    img.onload = () => res(true);
+    img.onerror = () => res(false);
+    img.src = src;
+  });
+
+  // Com a foto sem selo disponível, o selo sobe junto com a aba; sem ela, o lacre rompe na borda da aba.
+  function waitImages() {
+    return Promise.all([
+      loadImage('assets/envelope-sem-selo.webp').then((ok) => {
+        if (ok) return loadImage('assets/selo.webp').then(() => rig.classList.add('is-lift'));
+        return loadImage('assets/envelope.webp');
+      }),
+    ]);
+  }
+
+  fillPlace();
+  startCountdown();
+  onResize();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onResize);
+  reduceMotion.addEventListener?.('change', onResize);
+
+  Promise.all([waitImages(), document.fonts ? document.fonts.ready : null]).then(() => {
+    onResize();
+    document.body.classList.add('is-ready');
+  });
+})();

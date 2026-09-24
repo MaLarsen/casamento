@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Marcio &amp; Magali · 20.02.2027</title>
+  <meta name="description" content="Convite de casamento de Marcio e Magali — sábado, 20 de fevereiro de 2027, às 18h.">
+  <meta name="theme-color" content="#ebe3d5">
+  <meta property="og:title" content="Marcio &amp; Magali">
+  <meta property="og:description" content="Sábado, 20 de fevereiro de 2027, às 18h.">
+
+  <link rel="preload" as="font" type="font/woff2" href="fonts/pinyon-script.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="fonts/cormorant-garamond.woff2" crossorigin>
+  <link rel="preload" as="image" href="assets/envelope.webp">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main>
+    <!-- Trilho de rolagem: a altura desta seção define quanto se rola até o convite sair -->
+    <section class="reveal" id="reveal" aria-label="Convite de casamento">
+      <div class="stage" id="stage">
+        <p class="kicker" id="kicker">Você recebeu um convite</p>
+
+        <div class="rig" id="rig">
+          <div class="env-shadow" aria-hidden="true"></div>
+          <div class="env-back" aria-hidden="true"></div>
+
+          <div class="flap" id="flap" aria-hidden="true">
+            <div class="flap__face flap__front"><div class="flap__shade" id="flapShade"></div></div>
+            <div class="flap__face flap__back"><div class="flap__shade" id="flapBackShade"></div></div>
+            <img class="seal" id="seal" src="assets/selo.webp" alt="" width="380" height="380" decoding="async">
+          </div>
+
+          <article class="card" id="card">
+            <div class="card__inner">
+              <svg class="card__sprig" viewBox="0 0 120 60" aria-hidden="true">
+                <path d="M60 58 C60 40 58 26 52 10" />
+                <path d="M59 44 C50 40 42 41 34 46 M58 34 C49 29 41 29 33 32 M56 24 C49 19 43 17 37 18" />
+                <path d="M60 46 C68 41 77 41 85 45 M60 36 C68 31 76 30 84 33 M58 26 C64 20 71 18 78 19" />
+                <circle cx="52" cy="9" r="1.6" /><circle cx="47" cy="12" r="1.2" /><circle cx="56" cy="11" r="1.2" />
+                <circle cx="33" cy="46" r="1.2" /><circle cx="86" cy="45" r="1.2" /><circle cx="36" cy="18" r="1.1" /><circle cx="79" cy="19" r="1.1" />
+              </svg>
+
+              <p class="card__lead">Com imensa alegria, convidamos você<br>para celebrar o nosso casamento</p>
+
+              <h1 class="card__names">
+                <span>Marcio</span>
+                <span class="card__amp">&amp;</span>
+                <span>Magali</span>
+              </h1>
+
+              <div class="card__date" aria-label="Sábado, 20 de fevereiro de 2027, às 18 horas">
+                <span class="card__date-side">Sábado</span>
+                <span class="card__date-day">20</span>
+                <span class="card__date-side">às 18h</span>
+              </div>
+              <p class="card__month">Fevereiro · 2027</p>
+
+              <p class="card__place" id="cardPlace" hidden></p>
+            </div>
+          </article>
+
+          <div class="env-front" aria-hidden="true"><div class="env-front__paper"></div></div>
+        </div>
+
+        <div class="hint" id="hint" aria-hidden="true"><span>Role para abrir</span><i></i></div>
+      </div>
+    </section>
+
+    <section class="details" id="detalhes">
+      <p class="details__eyebrow">Faltam</p>
+      <div class="countdown" id="countdown" data-date="2027-02-20T18:00:00-03:00">
+        <div><strong data-unit="d">—</strong><span>dias</span></div>
+        <div><strong data-unit="h">—</strong><span>horas</span></div>
+        <div><strong data-unit="m">—</strong><span>min</span></div>
+        <div><strong data-unit="s">—</strong><span>seg</span></div>
+      </div>
+      <p class="details__date">Sábado, 20 de fevereiro de 2027 · 18h</p>
+      <p class="details__place" id="detailsPlace" hidden></p>
+      <p class="details__sign">Marcio &amp; Magali</p>
+    </section>
+  </main>
+
+  <script src="js/main.js" defer></script>
+</body>
+</html>
