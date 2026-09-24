@@ -11,9 +11,9 @@
 
   <link rel="preload" as="font" type="font/woff2" href="fonts/pinyon-script.woff2" crossorigin>
   <link rel="preload" as="font" type="font/woff2" href="fonts/cormorant-garamond.woff2" crossorigin>
-  <link rel="preload" as="image" href="assets/envelope-sem-selo.webp">
-  <link rel="preload" as="image" href="assets/selo.webp">
   <link rel="stylesheet" href="css/style.css">
+  <!-- Versão do envelope: padrão floral; #renda mostra a versão com renda e pérola -->
+  <script>document.documentElement.dataset.variant = location.hash === '#renda' ? 'renda' : 'floral';</script>
 </head>
 <body>
   <main>
@@ -29,7 +29,7 @@
           <div class="flap" id="flap" aria-hidden="true">
             <div class="flap__face flap__front"><div class="flap__shade" id="flapShade"></div></div>
             <div class="flap__face flap__back"><div class="flap__shade" id="flapBackShade"></div></div>
-            <img class="seal" id="seal" src="assets/selo.webp" alt="" width="380" height="380" decoding="async">
+            <div class="seal" id="seal"></div>
           </div>
 
           <article class="card" id="card">

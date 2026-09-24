@@ -244,8 +244,7 @@ body {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   filter: drop-shadow(0 3px 4px rgba(60, 42, 20, .28)) drop-shadow(0 10px 14px rgba(60, 42, 20, .16));
-  user-select: none;
-  -webkit-user-drag: none;
+  background: url("../assets/selo.webp") 0 0 / 100% 100% no-repeat;
 }
 
 /* ---------- Cartão ---------- */

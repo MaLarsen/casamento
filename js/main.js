@@ -4,7 +4,9 @@
   // Local da cerimônia. Preencha quando tiver (ex.: 'Espaço Jardim — Rua X, 123, Cidade').
   const LOCAL = '';
 
-  const FLAP_H = 0.4521;     // altura da aba em fração da altura do envelope
+  // Altura da aba (fração da altura do envelope) em cada versão do envelope
+  const FLAP_H_BY_VARIANT = { floral: 0.4521, renda: 0.4521 };
+  let FLAP_H = FLAP_H_BY_VARIANT.floral;
   const CARD_RATIO = 1.4;    // altura/largura do cartão (5:7)
   const CARD_IN_ENV = 0.84;  // largura do cartão dentro do envelope, em fração da largura do envelope
 
@@ -38,6 +40,12 @@
   let raf = 0;
   let last = 0;
   let autoRaf = 0;     // rolagem automática disparada pelo toque
+
+  function setVariant() {
+    const v = location.hash === '#renda' ? 'renda' : 'floral';
+    root.dataset.variant = v;
+    FLAP_H = FLAP_H_BY_VARIANT[v];
+  }
 
   function layout() {
     const vw = stage.clientWidth;
@@ -191,9 +199,11 @@
     setInterval(update, 1000);
   }
 
+  setVariant();
   fillPlace();
   startCountdown();
   onResize();
+  window.addEventListener('hashchange', () => { setVariant(); onResize(); });
   window.addEventListener('scroll', onScroll, { passive: true });
   openBtn.addEventListener('click', openEnvelope);
   for (const ev of ['wheel', 'touchstart', 'pointerdown', 'keydown']) {
