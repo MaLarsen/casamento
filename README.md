@@ -1,6 +1,6 @@
 # Convite — Marcio & Magali
 
-Página estática. Ao rolar (ou tocar no envelope), a aba abre, o envelope desce e o convite sobe para o centro da tela.
+Página estática. Ao rolar (ou tocar no envelope), a aba abre, o envelope desce e o convite sobe para o centro da tela. O convite traz data, contagem regressiva e o botão da lista de presentes; o texto se ajusta sozinho em telas baixas.
 
 Duas versões do envelope no mesmo código:
 - `index.html` — floral com selo de cera.
@@ -13,6 +13,7 @@ Duas versões do envelope no mesmo código:
 - `assets/envelope-sem-selo.webp` — a mesma foto sem o selo (editada com Nano Banana Pro), usada no envelope.
 - `assets/selo.webp` — selo recortado da foto original, preso à aba.
 - `assets/envelope-renda.webp` e `assets/aba-renda.webp` — versão renda: envelope com o papel limpo sob a aba e a aba recortada (renda + pérola) com transparência. Gerados a partir de uma edição feita com Nano Banana Pro.
+- `assets/maos.webp` — foto do topo do convite (versão floral).
 - `fonts/` — Cormorant Garamond e Pinyon Script (SIL OFL 1.1).
 
 Para ver localmente: `python3 -m http.server` e abrir `http://localhost:8000`.

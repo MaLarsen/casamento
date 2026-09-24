@@ -301,7 +301,7 @@ body {
   box-shadow:
     0 1px 2px rgba(60, 42, 20, .14),
     0 12px 30px -10px rgba(60, 42, 20, .3);
-  font-size: calc(var(--cw) / 24);
+  font-size: calc(var(--cw) / 24 * var(--fit, 1));
   overflow: hidden;
   --banner-h: 0px;
 }
@@ -313,10 +313,13 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: var(--banner-h);
-  background: url("../assets/maos.webp") 50% 58% / cover no-repeat;
-  -webkit-mask-image: linear-gradient(#000 78%, transparent);
-  mask-image: linear-gradient(#000 78%, transparent);
+  /* passa um pouco da moldura para o degradê terminar bem suave, atrás do texto de abertura */
+  height: calc(var(--banner-h) * 1.2);
+  background: url("../assets/maos.webp") 50% 40% / cover no-repeat;
+  --fade: linear-gradient(#000 0%, #000 58%, rgba(0, 0, 0, .9) 65%, rgba(0, 0, 0, .72) 72%,
+    rgba(0, 0, 0, .5) 79%, rgba(0, 0, 0, .3) 86%, rgba(0, 0, 0, .14) 92%, rgba(0, 0, 0, .04) 97%, transparent);
+  -webkit-mask-image: var(--fade);
+  mask-image: var(--fade);
 }
 
 /* Data por extenso, em três linhas (versão floral) */
@@ -334,7 +337,7 @@ body {
 }
 
 .card__when-day {
-  font-size: .8em;
+  font-size: max(.8em, 10px);
   letter-spacing: .32em;
   text-transform: uppercase;
 }
@@ -370,7 +373,7 @@ body {
   border: 1px solid rgba(168, 141, 98, .55);
   outline: 1px solid rgba(168, 141, 98, .35);
   outline-offset: calc(var(--cw) * -.016);
-  padding: 8% 7%;
+  padding: 9% 7% 8%;
 }
 
 /* cartão alto (celular): distribui os blocos na altura */
@@ -455,6 +458,47 @@ body {
   color: var(--ink);
 }
 
+.card__countdown {
+  margin-top: 1.3em;
+  width: 100%;
+}
+
+.card__countdown-label {
+  margin: 0 0 .45em;
+  font-size: max(.72em, 9px);
+  letter-spacing: .34em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.card__countdown-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .5em;
+}
+
+.card__countdown-row div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .15em;
+}
+
+.card__countdown-row strong {
+  font-size: 1.45em;
+  font-weight: 500;
+  line-height: 1;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--ink);
+}
+
+.card__countdown-row span {
+  font-size: max(.62em, 9px);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
 .card__info {
   margin-top: 1.3em;
   display: flex;
@@ -490,7 +534,7 @@ body {
   padding: .7em 1.8em;
   border: 1px solid var(--gold);
   border-radius: 999px;
-  font-size: .78em;
+  font-size: max(.78em, 10px);
   letter-spacing: .24em;
   text-transform: uppercase;
   text-decoration: none;
@@ -511,78 +555,6 @@ body {
 }
 
 .card__rsvp { margin-top: .9em; }
-
-/* ---------- Detalhes ---------- */
-
-.details {
-  position: relative;
-  min-height: 100vh;
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 72px 16px;
-  text-align: center;
-}
-
-.details__eyebrow {
-  margin: 0 0 14px;
-  font-size: 15px;
-  letter-spacing: .34em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-
-.countdown {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(8px, 3vw, 28px);
-  width: min(100%, 520px);
-}
-
-.countdown div {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 14px 4px 12px;
-  border-top: 1px solid rgba(168, 141, 98, .55);
-  border-bottom: 1px solid rgba(168, 141, 98, .55);
-}
-
-.countdown strong {
-  font-size: clamp(30px, 9vw, 52px);
-  font-weight: 500;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-}
-
-.countdown span {
-  margin-top: 6px;
-  font-size: 13px;
-  letter-spacing: .22em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-
-.details__date {
-  margin: 34px 0 0;
-  font-size: clamp(19px, 4.6vw, 24px);
-  font-style: italic;
-}
-
-.details__place {
-  margin: 8px 0 0;
-  font-size: clamp(17px, 4vw, 21px);
-  color: var(--ink-soft);
-}
-
-.details__sign {
-  margin: 48px 0 0;
-  font-family: "Pinyon Script", cursive;
-  font-size: clamp(38px, 10vw, 58px);
-  color: var(--ink);
-}
 
 /* ---------- Movimento reduzido: mostra o convite já aberto ---------- */
 

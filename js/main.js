@@ -61,9 +61,9 @@
     const H = W * 16 / 9;
     // Proporção do cartão acompanha a tela: mais alto no celular (cabe no envelope até 1,95).
     // O floral tem foto no topo, então nunca fica mais baixo que 1,75.
-    const minRatio = root.dataset.variant === 'floral' ? 1.75 : 1.4;
-    const cardRatio = clamp((vh * 0.88) / (vw * 0.92), minRatio, 1.95);
-    const cwF = Math.round(Math.min(vw * 0.92, (vh * 0.88) / cardRatio, 540));
+    const minRatio = root.dataset.variant === 'floral' ? 1.75 : 1.5;
+    const cardRatio = clamp((vh * 0.9) / (vw * 0.92), minRatio, 1.95);
+    const cwF = Math.round(Math.min(vw * 0.92, (vh * 0.9) / cardRatio, 540));
 
     root.style.setProperty('--W', W + 'px');
     root.style.setProperty('--cw', cwF + 'px');
@@ -82,12 +82,40 @@
     // Envelope (com a aba aberta) sai inteiro por baixo da tela
     const ty3 = vh / 2 + H * s1 * (0.5 + FLAP_H) + vh * 0.04;
 
+    fitCard();
+
     L = {
       vw, vh, W, H, cwF, chA, s1, ty1, ty2, ty3,
       kAtt: cwA / cwF,
       cy0: cardTopRest + chA / 2 - H / 2,
       rise: cardTopRest + chA + gap,
     };
+  }
+
+  // Telas baixas: reduz o texto do cartão até caber na moldura (mínimo 70%)
+  function fitCard() {
+    const inner = card.querySelector('.card__inner');
+    const cs = getComputedStyle(inner);
+    const avail = inner.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    let k = 1;
+    for (let i = 0; i < 5; i++) {
+      card.style.setProperty('--fit', k.toFixed(3));
+      // retângulos incluem a escala do cartão; divide por ela para voltar a px de layout
+      const scale = inner.getBoundingClientRect().height / inner.offsetHeight || 1;
+      let top = Infinity;
+      let bottom = -Infinity;
+      for (const el of inner.children) {
+        const r = el.getBoundingClientRect();
+        if (!r.height) continue;
+        const m = getComputedStyle(el);
+        top = Math.min(top, r.top / scale - parseFloat(m.marginTop));
+        bottom = Math.max(bottom, r.bottom / scale + parseFloat(m.marginBottom));
+      }
+      const need = bottom - top;
+      if (!Number.isFinite(need) || need <= avail) break;
+      k = Math.max(0.7, k * (avail / need) * 0.98);
+      if (k === 0.7) { card.style.setProperty('--fit', k); break; }
+    }
   }
 
   function render(p) {
@@ -191,7 +219,6 @@
     show('cardAddress', INFO.endereco);
     show('cardDress', INFO.traje);
     show('cardRsvp', INFO.confirmacao);
-    show('detailsPlace', [INFO.local, INFO.endereco].filter(Boolean).join(' · '));
     $('giftLink').href = INFO.listaPresentes;
   }
 
@@ -221,6 +248,7 @@
   startCountdown();
   onResize();
   window.addEventListener('hashchange', () => { setVariant(); onResize(); });
+  document.fonts?.ready.then(onResize);
   window.addEventListener('scroll', onScroll, { passive: true });
   openBtn.addEventListener('click', openEnvelope);
   for (const ev of ['wheel', 'touchstart', 'pointerdown', 'keydown']) {
